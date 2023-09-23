@@ -24,6 +24,7 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
+// @ts-ignore
 import erc6551Abi from "@/config/erc6551Abi";
 
 const Register: NextPageWithLayout = () => {
