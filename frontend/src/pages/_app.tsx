@@ -5,7 +5,7 @@ import { GlobalStoreRoot } from "@/store/global";
 
 import { WagmiConfig } from "wagmi";
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
-import { mainnet, goerli } from "wagmi/chains";
+import { mainnet, goerli, sepolia } from "wagmi/chains";
 import { NextPage } from "next";
 import { ReactElement, ReactNode } from "react";
 import { theme } from "@/styles/theme";
@@ -20,7 +20,7 @@ type AppPropsWithLayout = AppProps & {
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "";
 
-const chains = [goerli, mainnet];
+const chains = [sepolia, mainnet];
 const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
