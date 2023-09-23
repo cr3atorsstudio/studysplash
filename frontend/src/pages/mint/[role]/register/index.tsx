@@ -24,7 +24,7 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import { ERC6551_ABI } from "@/config/erc6551Abi";
+import { ERC6551_ABI } from "@/config/erc6551ABI";
 
 const Register: NextPageWithLayout = () => {
   const router = useRouter();
