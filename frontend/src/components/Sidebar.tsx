@@ -62,6 +62,40 @@ const LinkItems: Array<LinkItemProps> = [
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const {
+    account,
+    setAccount,
+    register: registerIdentity,
+    identityKey,
+  } = useW3iAccount();
+  const { subscribe, unsubscribe, isSubscribed } = useManageSubscription({
+    account,
+  });
+
+  const { handleSendNotification, isSending } = useSendNotification();
+
+  const isW3iInitialized = useInitWeb3InboxClient({
+    projectId,
+    domain: appDomain,
+  });
+
+  const handleTestNotification = useCallback(async () => {
+    if (isSubscribed) {
+      handleSendNotification({
+        title: "GM Hacker",
+        body: "Hack it until you make it!",
+        icon: `${window.location.origin}/WalletConnect-blue.svg`,
+        url: window.location.origin,
+        type: "promotional",
+      });
+    }
+  }, [handleSendNotification, isSubscribed]);
+
+  const { address } = useAccount({
+    onDisconnect: () => {
+      setAccount("");
+    },
+  });
   return (
     <Box
       transition="3s ease"
@@ -82,6 +116,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           {link.name}
         </NavItem>
       ))}
+      <Button onClick={subscribe}>Subscribe</Button>
     </Box>
   );
 };
@@ -179,41 +214,9 @@ const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
 
 const Sidebar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    account,
-    setAccount,
-    register: registerIdentity,
-    identityKey,
-  } = useW3iAccount();
-  const {
-    subscribe,
-    unsubscribe,
-    isSubscribed,
-    isSubscribing,
-    isUnsubscribing,
-  } = useManageSubscription(account);
-
-  const { handleSendNotification, isSending } = useSendNotification();
-
-  const isW3iInitialized = useInitWeb3InboxClient({
-    projectId,
-    domain: appDomain,
-  });
-
-  const handleTestNotification = useCallback(async () => {
-    if (isSubscribed) {
-      handleSendNotification({
-        title: "GM Hacker",
-        body: "Hack it until you make it!",
-        icon: `${window.location.origin}/WalletConnect-blue.svg`,
-        url: window.location.origin,
-        type: "promotional",
-      });
-    }
-  }, [handleSendNotification, isSubscribed]);
 
   return (
-    <Box bg={useColorModeValue("gray.100", "gray.900")} w={"200px"}>
+    <Box w={"200px"}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
@@ -230,6 +233,7 @@ const Sidebar = () => {
           <SidebarContent onClose={onClose} />
         </DrawerContent>
       </Drawer>
+
       {/* mobilenav */}
       <MobileNav
         display={{ base: "flex", md: "none" }}
@@ -237,17 +241,6 @@ const Sidebar = () => {
         onClose={onClose}
         isOpen={isOpen}
       />
-      <Button
-        variant="outline"
-        onClick={handleTestNotification}
-        isDisabled={!isW3iInitialized}
-        colorScheme="purple"
-        rounded="full"
-        isLoading={isSending}
-        loadingText="Sending..."
-      >
-        Subscribe
-      </Button>
     </Box>
   );
 };
