@@ -15,7 +15,7 @@ import "./ERC6551.sol";
 contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     using SafeMath for uint256;
     using Counters for Counters.Counter;
-    Counters.Counter private _tokenIdCounter;
+    Counters.Counter private _tokenIdCounter = Counters.Counter(1);
 
     constructor() ERC721("StudySplashAvatar", "SSA") {}
 
@@ -25,10 +25,10 @@ contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownab
         address tbaAddress;
     }
 
-    mapping(uint256 => NFTInfo) private _nftInfos;
+    mapping(uint256 => NFTInfo) public _nftInfos;
     mapping(address => bool) public isTeacher;
     mapping(address => bool) public hasMinted;
-    mapping(address => uint256) private _creatorToTokenId;
+    mapping(address => uint256) public creatorToTokenId;
 
     address public registry = 0x02101dfB77FDE026414827Fdc604ddAF224F0921;
     address public implementation = 0x2D25602551487C3f3354dD80D76D54383A243358;
@@ -41,9 +41,10 @@ contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownab
         _tokenIdCounter.increment();
         _safeMint(msg.sender, tokenId);
         _createTbaAccount(tokenId);
-        _creatorToTokenId[msg.sender] = tokenId;
+        creatorToTokenId[msg.sender] = tokenId;
+        hasMinted[msg.sender] = true;
         address _tbaAddress = _computeTbaAddress(tokenId);
-        _setTeacherStatus(_tbaAddress, isTeacherStatus);
+        _setTeacherStatus(msg.sender, isTeacherStatus);
 
         NFTInfo storage newNFTInfo = _nftInfos[tokenId];
 
@@ -129,7 +130,7 @@ contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownab
     function getIndividualNFTInfo(
         address _creator
     ) public view returns (uint256, address) {
-        uint256 tokenId = _creatorToTokenId[_creator];
+        uint256 tokenId = creatorToTokenId[_creator];
         require(tokenId != 0, "No NFT found for this creator");
         return (
             _nftInfos[tokenId].tokenId,
