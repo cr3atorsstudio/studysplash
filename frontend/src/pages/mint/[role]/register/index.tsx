@@ -24,8 +24,7 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-// @ts-ignore
-import erc6551Abi from "@/config/erc6551Abi";
+import { ERC6551_ABI } from "@/config/erc6551Abi";
 
 const Register: NextPageWithLayout = () => {
   const router = useRouter();
@@ -95,7 +94,7 @@ const Register: NextPageWithLayout = () => {
     isLoading: isContractLoading,
   } = useContractRead({
     address: "0x87968bd85f2c2c312935eaf4d1ef4e0843931b92",
-    abi: erc6551Abi,
+    abi: ERC6551_ABI,
     functionName: "totalSupply",
     chainId: 11155111,
   });
@@ -103,7 +102,7 @@ const Register: NextPageWithLayout = () => {
   //TODO: コントラクト新しくなったら引数かえる
   const { config, error } = usePrepareContractWrite({
     address: "0x87968bd85f2c2c312935eaf4d1ef4e0843931b92",
-    abi: erc6551Abi,
+    abi: ERC6551_ABI,
     functionName: "createNFT",
     chainId: 11155111,
     args: [

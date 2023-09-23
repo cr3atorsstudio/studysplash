@@ -1,4 +1,4 @@
-export default [
+export const ERC6551_ABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
     anonymous: false,
@@ -265,4 +265,4 @@ export default [
     stateMutability: "nonpayable",
     type: "function",
   },
-] as const;
+];
