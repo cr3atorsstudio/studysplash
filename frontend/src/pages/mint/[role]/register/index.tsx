@@ -18,7 +18,6 @@ import { useRouter } from "next/router";
 import CustomRadio from "@/components/CustomRadio";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { globalStore } from "@/store/global";
-import { uploadUserMetadataToS3 } from "@/lib/s3upload";
 
 const Register: NextPageWithLayout = () => {
   const router = useRouter();
