@@ -24,7 +24,6 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import { ERC6551_CONTRACT } from "@/config/contract";
 import erc6551Abi from "@/config/erc6551Abi";
 
 const Register: NextPageWithLayout = () => {
