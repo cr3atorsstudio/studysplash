@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import { Box } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 
 interface Props {
   children: React.ReactNode;
@@ -12,6 +12,7 @@ const DashboardLayout = ({ children }: Props) => {
     <>
       <Header />
       <Sidebar />
+
       <Box
         bg="#FFF9FB"
         py={"80px"}

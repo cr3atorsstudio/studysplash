@@ -14,6 +14,7 @@ import {
   BoxProps,
   FlexProps,
   useBreakpointValue,
+  Button,
 } from "@chakra-ui/react";
 import { FiHome, FiMenu } from "react-icons/fi";
 import { HiUserGroup } from "react-icons/hi";
@@ -25,7 +26,14 @@ import { useCallback, useEffect } from "react";
 import { globalStore } from "@/store/global";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { useRouter } from "next/router";
+import {
+  useInitWeb3InboxClient,
+  useManageSubscription,
+  useW3iAccount,
+} from "@web3inbox/widget-react";
 
+import { useAccount, usePublicClient, useSignMessage } from "wagmi";
+import useSendNotification from "@/hooks/useSendNotification";
 interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -54,6 +62,35 @@ const LinkItems: Array<LinkItemProps> = [
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const { account, setAccount, register: registerIdentity } = useW3iAccount();
+  const { subscribe, unsubscribe, isSubscribed } = useManageSubscription({
+    account,
+  });
+
+  const { handleSendNotification, isSending } = useSendNotification();
+
+  const isW3iInitialized = useInitWeb3InboxClient({
+    projectId,
+    domain: appDomain,
+  });
+
+  const handleTestNotification = useCallback(async () => {
+    if (isSubscribed) {
+      handleSendNotification({
+        title: "GM Hacker",
+        body: "Hack it until you make it!",
+        icon: `${window.location.origin}/WalletConnect-blue.svg`,
+        url: window.location.origin,
+        type: "promotional",
+      });
+    }
+  }, [handleSendNotification, isSubscribed]);
+
+  const { address } = useAccount({
+    onDisconnect: () => {
+      setAccount("");
+    },
+  });
   return (
     <Box
       transition="3s ease"
@@ -68,11 +105,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
+
       {LinkItems.map((link) => (
         <NavItem key={link.name} icon={link.icon} href={link.href}>
           {link.name}
         </NavItem>
       ))}
+      <Button onClick={subscribe}>Subscribe</Button>
     </Box>
   );
 };
@@ -94,7 +133,9 @@ const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
     <Link
       href={href}
       onClick={onMenuItemClick}
-      style={{ textDecoration: "none" }}
+      style={{
+        textDecoration: "none",
+      }}
     >
       <Flex
         align="center"
@@ -103,10 +144,11 @@ const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        color={selectedMenu === href ? "white" : "white"}
+        color={"white"}
         {...rest}
         fontWeight={500}
         fontSize={"lg"}
+        bg={selectedMenu === href ? "#403f3e66" : "transparent"}
       >
         {icon && (
           <Icon
@@ -162,11 +204,14 @@ const MobileNav = ({ onOpen, onClose, isOpen }: MobileProps) => {
   );
 };
 
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
+const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
+
 const Sidebar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box bg={useColorModeValue("gray.100", "gray.900")} w={"200px"}>
+    <Box w={"200px"}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
@@ -183,6 +228,7 @@ const Sidebar = () => {
           <SidebarContent onClose={onClose} />
         </DrawerContent>
       </Drawer>
+
       {/* mobilenav */}
       <MobileNav
         display={{ base: "flex", md: "none" }}

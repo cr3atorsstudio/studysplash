@@ -15,12 +15,20 @@ const ConnectButton = ({ isConnected, label }: Props) => {
       {isConnected ? (
         <>
           <IconButton
+            rounded={"full"}
+            bg={"brand.student"}
             aria-label={"wallet button"}
-            icon={<LuWallet />}
+            icon={
+              <AccountBalanceWalletOutlinedIcon
+                style={{
+                  color: "#fff",
+                }}
+              />
+            }
             onClick={() => open({ view: "Account" })}
             mx={3}
           />
-          <Link href={"/dashboard"}>
+          {/* <Link href={"/dashboard"}>
             <Button
               rounded={"full"}
               size={{ md: "md", base: "xs" }}
@@ -29,7 +37,7 @@ const ConnectButton = ({ isConnected, label }: Props) => {
             >
               Launch app
             </Button>
-          </Link>
+          </Link> */}
         </>
       ) : (
         <IconButton

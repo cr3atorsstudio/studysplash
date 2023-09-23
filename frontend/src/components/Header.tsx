@@ -22,7 +22,7 @@ const WithSubnavigation = () => {
   return (
     <Box position="fixed" w="100%" as="header" zIndex={9999}>
       <Flex
-        bg={"white"}
+        bg={"#FFF9FB"}
         color={"white"}
         h={"80px"}
         py={{ base: 2 }}

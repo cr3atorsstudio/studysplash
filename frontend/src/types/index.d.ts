@@ -9,3 +9,11 @@ export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
+
+export interface INotification {
+  title: string;
+  body: string;
+  icon: string;
+  url: string;
+  type: string;
+}
