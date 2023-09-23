@@ -37,7 +37,7 @@ const Dashboard: NextPageWithLayout = () => {
       {hasNft && (
         <Flex flexDir={"column"} p={10} w={"100%"}>
           <Flex w="full">
-            <VStack w="400px">
+            <VStack w="800px">
               <Image
                 src="https://studysplash.s3.us-east-1.amazonaws.com/assets/teacher_1.png"
                 w={"300px"}
