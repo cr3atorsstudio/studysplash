@@ -12,13 +12,13 @@ contract GroupToken is ERC1155, Ownable {
     mapping(uint256 => bool) public isOpen;
     mapping(uint256 => address) public tokenCreators;
 
-    StudySplashTeacherToken public erc6551TestToken;
+    StudySplashTeacherToken public studySplashTeacherToken;
 
     constructor() ERC1155("https://studysplash.s3.amazonaws.com/metadata/group/{id}.json") {
     }
 
     function setTeacherTokenAddress(address _teacherTokenAddress) external onlyOwner {
-        erc6551TestToken = StudySplashTeacherToken(_teacherTokenAddress);
+        studySplashTeacherToken = StudySplashTeacherToken(_teacherTokenAddress);
     }
 
     function setURI(string memory newuri) public onlyOwner {
@@ -32,7 +32,7 @@ contract GroupToken is ERC1155, Ownable {
 
         if (tokenCreators[id] == address(0)) {
             // isTeacher?
-            require(erc6551TestToken.isTeacher(msg.sender), "You must be a teacher to create a new token ID");
+            require(studySplashTeacherToken.isTeacher(msg.sender), "You must be a teacher to create a new token ID");
             isOpen[id] = true;
         } else {
             // If token ID exists, check if it's open for minting
