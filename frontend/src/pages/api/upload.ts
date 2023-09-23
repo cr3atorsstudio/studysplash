@@ -8,11 +8,11 @@ const s3 = new S3({
 
 export default async (req: any, res: any) => {
   if (req.method === "POST") {
-    const { jsonContent } = req.body;
+    const { id, jsonContent } = req.body;
 
     const params: S3.Types.PutObjectRequest = {
       Bucket: "studysplash",
-      Key: `metadata/user/1.json`,
+      Key: `metadata/user/${id}.json`,
       Body: JSON.stringify(jsonContent),
       ACL: "public-read",
       ContentType: "application/json",
