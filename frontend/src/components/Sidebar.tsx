@@ -15,6 +15,7 @@ import {
   FlexProps,
   useBreakpointValue,
   Button,
+  Tooltip,
 } from "@chakra-ui/react";
 import { FiHome, FiMenu } from "react-icons/fi";
 import { HiUserGroup } from "react-icons/hi";
@@ -29,6 +30,7 @@ import { useRouter } from "next/router";
 import {
   useInitWeb3InboxClient,
   useManageSubscription,
+  useMessages,
   useW3iAccount,
 } from "@web3inbox/widget-react";
 
@@ -62,19 +64,71 @@ const LinkItems: Array<LinkItemProps> = [
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
-  const { account, setAccount, register: registerIdentity } = useW3iAccount();
-  const { subscribe, unsubscribe, isSubscribed } = useManageSubscription({
+  const {
     account,
-  });
+    setAccount,
+    register: registerIdentity,
+    identityKey,
+  } = useW3iAccount();
+  const {
+    subscribe,
+    unsubscribe,
+    isSubscribed,
+    isUnsubscribing,
+    isSubscribing,
+  } = useManageSubscription(account);
+
+  const { signMessageAsync } = useSignMessage();
 
   const { handleSendNotification, isSending } = useSendNotification();
 
+  const { messages, deleteMessage } = useMessages(account);
+
+  console.log({ messages });
+
+  const { address } = useAccount({
+    onDisconnect: () => {
+      setAccount("");
+    },
+  });
   const isW3iInitialized = useInitWeb3InboxClient({
     projectId,
     domain: appDomain,
   });
 
+  const signMessage = useCallback(
+    async (message: string) => {
+      const res = await signMessageAsync({
+        message,
+      });
+
+      return res as string;
+    },
+    [signMessageAsync]
+  );
+
+  const handleRegistration = useCallback(async () => {
+    if (!account) return;
+    try {
+      await registerIdentity(signMessage);
+    } catch (registerIdentityError) {
+      console.error({ registerIdentityError });
+    }
+  }, [signMessage, registerIdentity, account]);
+
+  useEffect(() => {
+    if (!Boolean(address)) return;
+    setAccount(`eip155:1:${address}`);
+  }, [signMessage, address, setAccount]);
+
+  useEffect(() => {
+    if (!identityKey) {
+      handleRegistration();
+    }
+  }, [handleRegistration, identityKey]);
+
   const handleTestNotification = useCallback(async () => {
+    console.log({ isSubscribed });
     if (isSubscribed) {
       handleSendNotification({
         title: "GM Hacker",
@@ -86,11 +140,6 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     }
   }, [handleSendNotification, isSubscribed]);
 
-  const { address } = useAccount({
-    onDisconnect: () => {
-      setAccount("");
-    },
-  });
   return (
     <Box
       transition="3s ease"
@@ -111,7 +160,55 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           {link.name}
         </NavItem>
       ))}
-      <Button onClick={subscribe}>Subscribe</Button>
+      {isSubscribed ? (
+        <>
+          <Button
+            variant="outline"
+            onClick={handleTestNotification}
+            isDisabled={!isW3iInitialized}
+            colorScheme="purple"
+            rounded="full"
+            isLoading={isSending}
+            loadingText="Sending..."
+          >
+            Send test notification
+          </Button>
+          <Button
+            onClick={unsubscribe}
+            variant="outline"
+            isDisabled={!isW3iInitialized || !account}
+            colorScheme="red"
+            isLoading={isUnsubscribing}
+            loadingText="Unsubscribing..."
+            rounded="full"
+          >
+            Unsubscribe
+          </Button>
+        </>
+      ) : (
+        <Tooltip
+          label={
+            !Boolean(address)
+              ? "Connect your wallet first."
+              : "Register your account."
+          }
+          hidden={Boolean(account)}
+        >
+          <Button
+            onClick={subscribe}
+            color="white"
+            rounded="full"
+            variant="outline"
+            w="fit-content"
+            alignSelf="center"
+            isLoading={isSubscribing}
+            loadingText="Subscribing..."
+            isDisabled={!Boolean(address) || !Boolean(account)}
+          >
+            Subscribe
+          </Button>
+        </Tooltip>
+      )}
     </Box>
   );
 };

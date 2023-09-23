@@ -61,7 +61,7 @@ const Dashboard: NextPageWithLayout = () => {
                         r="17.75"
                         fill="#78B4CE"
                         stroke="#4B88A2"
-                        stroke-width="0.5"
+                        strokeWidth="0.5"
                       />
                       <circle cx="18" cy="18" r="12" fill="#4B88A2" />
                       <path
