@@ -18,7 +18,12 @@ import { useRouter } from "next/router";
 import CustomRadio from "@/components/CustomRadio";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { globalStore } from "@/store/global";
-import { useContractRead } from "wagmi";
+import {
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
 import { ERC6551_CONTRACT } from "@/config/contract";
 import erc6551Abi from "@/config/erc6551Abi";
 
@@ -26,7 +31,7 @@ const Register: NextPageWithLayout = () => {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [totalSupply, setTotalSupply] = useState(0);
+  const [nextTokenId, setNextTokenId] = useState(0);
   const setIsLoading = useSetRecoilState(globalStore.isLoading);
   const isLoading = useRecoilValue(globalStore.isLoading);
   const role = router.query.role;
@@ -66,7 +71,7 @@ const Register: NextPageWithLayout = () => {
       duration: 2000,
     });
   };
-  console.log("imageUrl", imageUrl);
+  console.log("nextTokenId", nextTokenId);
 
   const uploadToS3 = async (jsonData: any) => {
     const response = await fetch("/api/upload", {
@@ -74,7 +79,7 @@ const Register: NextPageWithLayout = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id: totalSupply, jsonContent: jsonData }),
+      body: JSON.stringify({ id: nextTokenId, jsonContent: jsonData }),
     });
     const result = await response.json();
     if (response.ok) {
@@ -95,9 +100,26 @@ const Register: NextPageWithLayout = () => {
     chainId: 11155111,
   });
 
+  //TODO: コントラクト新しくなったら引数かえる
+  const { config, error } = usePrepareContractWrite({
+    address: "0x87968bd85f2c2c312935eaf4d1ef4e0843931b92",
+    abi: erc6551Abi,
+    functionName: "createNFT",
+    chainId: 11155111,
+    args: [
+      `https://studysplash.s3.amazonaws.com/metadata/user/${nextTokenId}.json`,
+    ],
+  });
+  const {
+    data: writeData,
+    isError: isWriteError,
+    isLoading: isContractWriteLoading,
+    write,
+  } = useContractWrite(config);
+
   useEffect(() => {
     if (!isContractLoading) {
-      setTotalSupply(Number(data));
+      setNextTokenId(Number(data) + 1);
     }
   }, [isContractLoading]);
 
@@ -117,11 +139,27 @@ const Register: NextPageWithLayout = () => {
       ],
     };
     await uploadToS3(json);
-    setIsLoading(false);
-
-    router.push("/mint/teacher/group");
+    write?.();
   }, [username, imageUrl]);
 
+  const { isLoading: isWaitContractLoading, isSuccess: isWaitContractSuccess } =
+    useWaitForTransaction({
+      hash: writeData?.hash,
+    });
+
+  useEffect(() => {
+    //TODO: 失敗したとき
+    if (isWaitContractSuccess) {
+      toast({
+        title: `NFT minted successfully!`,
+        status: "success",
+        duration: 2000,
+      });
+      setIsLoading(false);
+
+      router.push("/mint/teacher/group");
+    }
+  }, [isWaitContractSuccess]);
   const { value, getRadioProps } = useRadioGroup({
     defaultValue: "1",
     onChange: handleChange,

@@ -12,7 +12,7 @@ export default async (req: any, res: any) => {
 
     const params: S3.Types.PutObjectRequest = {
       Bucket: "studysplash",
-      Key: `metadata/user/${id + 1}.json`,
+      Key: `metadata/user/${id}.json`,
       Body: JSON.stringify(jsonContent),
       ACL: "public-read",
       ContentType: "application/json",

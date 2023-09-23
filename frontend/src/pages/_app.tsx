@@ -20,7 +20,7 @@ type AppPropsWithLayout = AppProps & {
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "";
 
-const chains = [goerli, mainnet, sepolia];
+const chains = [sepolia, mainnet];
 const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
