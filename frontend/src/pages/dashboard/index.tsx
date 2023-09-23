@@ -2,9 +2,11 @@ import DashboardLayout from "@/layout/dashboard";
 import { globalStore } from "@/store/global";
 import { NextPageWithLayout } from "../_app";
 import { useRouter } from "next/navigation";
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useCallback, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import {
+  Accordion,
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -14,9 +16,22 @@ import {
   Image,
   Tag,
   Text,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import ActivityLog from "@/components/ActivityLog";
+import Messages from "@/components/Messages";
+import {
+  useInitWeb3InboxClient,
+  useManageSubscription,
+  useMessages,
+  useW3iAccount,
+} from "@web3inbox/widget-react";
+import useSendNotification from "@/hooks/useSendNotification";
+import { useSignMessage, useAccount } from "wagmi";
+
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
+const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
 
 const Dashboard: NextPageWithLayout = () => {
   const hasNft = useRecoilValue(globalStore.hasNft);
@@ -24,7 +39,6 @@ const Dashboard: NextPageWithLayout = () => {
 
   // TODO: get from contract
   const role = "teacher";
-
   const color = role === "teacher" ? "brand.teacher" : "brand.student";
 
   useEffect(() => {
@@ -32,6 +46,79 @@ const Dashboard: NextPageWithLayout = () => {
       router.push("/mint");
     }
   }, []);
+
+  const {
+    account,
+    setAccount,
+    register: registerIdentity,
+    identityKey,
+  } = useW3iAccount();
+  const {
+    subscribe,
+    unsubscribe,
+    isSubscribed,
+    isUnsubscribing,
+    isSubscribing,
+  } = useManageSubscription(account);
+
+  const { signMessageAsync } = useSignMessage();
+
+  const { handleSendNotification, isSending } = useSendNotification();
+
+  const { messages, deleteMessage } = useMessages(account);
+
+  const { address } = useAccount({
+    onDisconnect: () => {
+      setAccount("");
+    },
+  });
+  const isW3iInitialized = useInitWeb3InboxClient({
+    projectId,
+    domain: appDomain,
+  });
+
+  const signMessage = useCallback(
+    async (message: string) => {
+      const res = await signMessageAsync({
+        message,
+      });
+
+      return res as string;
+    },
+    [signMessageAsync]
+  );
+
+  const handleRegistration = useCallback(async () => {
+    if (!account) return;
+    try {
+      await registerIdentity(signMessage);
+    } catch (registerIdentityError) {
+      console.error({ registerIdentityError });
+    }
+  }, [signMessage, registerIdentity, account]);
+
+  useEffect(() => {
+    if (!Boolean(address)) return;
+    setAccount(`eip155:1:${address}`);
+  }, [signMessage, address, setAccount]);
+
+  useEffect(() => {
+    if (!identityKey) {
+      handleRegistration();
+    }
+  }, [handleRegistration, identityKey]);
+
+  const handleTestNotification = useCallback(async () => {
+    if (isSubscribed) {
+      handleSendNotification({
+        title: "Student registered!",
+        body: "A new student has registered to your group!",
+        icon: "https://studysplash.s3.us-east-1.amazonaws.com/assets/students_1.png",
+        url: "https://studysplash.vercel.app",
+        type: "promotional",
+      });
+    }
+  }, [handleSendNotification, isSubscribed]);
   return (
     <>
       {hasNft && (
@@ -133,6 +220,50 @@ const Dashboard: NextPageWithLayout = () => {
               </Card>
             </VStack>
           </Flex>
+
+          {isSubscribed && (
+            <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">
+              <Messages />
+            </Accordion>
+          )}
+          {isSubscribed ? (
+            <HStack mt={3}>
+              <Button
+                onClick={unsubscribe}
+                variant="outline"
+                isDisabled={!isW3iInitialized || !account}
+                colorScheme="red"
+                isLoading={isUnsubscribing}
+                loadingText="Unsubscribing..."
+                rounded="full"
+              >
+                Unsubscribe
+              </Button>
+            </HStack>
+          ) : (
+            <Tooltip
+              label={
+                !Boolean(address)
+                  ? "Connect your wallet first."
+                  : "Register your account."
+              }
+              hidden={Boolean(account)}
+            >
+              <Button
+                onClick={subscribe}
+                color="white"
+                rounded="full"
+                variant="outline"
+                w="fit-content"
+                alignSelf="center"
+                isLoading={isSubscribing}
+                loadingText="Subscribing..."
+                isDisabled={!Boolean(address) || !Boolean(account)}
+              >
+                Subscribe
+              </Button>
+            </Tooltip>
+          )}
 
           <Heading textAlign={"center"} as={"h3"} color={"white"}>
             Activity Log
