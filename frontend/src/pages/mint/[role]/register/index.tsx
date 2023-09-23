@@ -1,5 +1,5 @@
 import { NextPageWithLayout } from "../../../_app";
-import { ReactElement, useCallback, useState } from "react";
+import { ReactElement, useCallback, useEffect, useState } from "react";
 import Layout from "@/layout";
 import Registration from "@/components/Registration";
 import {
@@ -18,11 +18,15 @@ import { useRouter } from "next/router";
 import CustomRadio from "@/components/CustomRadio";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { globalStore } from "@/store/global";
+import { useContractRead } from "wagmi";
+import { ERC6551_CONTRACT } from "@/config/contract";
+import erc6551Abi from "@/config/erc6551Abi";
 
 const Register: NextPageWithLayout = () => {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [totalSupply, setTotalSupply] = useState(0);
   const setIsLoading = useSetRecoilState(globalStore.isLoading);
   const isLoading = useRecoilValue(globalStore.isLoading);
   const role = router.query.role;
@@ -70,7 +74,7 @@ const Register: NextPageWithLayout = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ jsonContent: jsonData }),
+      body: JSON.stringify({ id: totalSupply, jsonContent: jsonData }),
     });
     const result = await response.json();
     if (response.ok) {
@@ -79,6 +83,23 @@ const Register: NextPageWithLayout = () => {
       console.error("Error uploading:", result.error);
     }
   };
+
+  const {
+    data,
+    isError,
+    isLoading: isContractLoading,
+  } = useContractRead({
+    address: "0x87968bd85f2c2c312935eaf4d1ef4e0843931b92",
+    abi: erc6551Abi,
+    functionName: "totalSupply",
+    chainId: 11155111,
+  });
+
+  useEffect(() => {
+    if (!isContractLoading) {
+      setTotalSupply(Number(data));
+    }
+  }, [isContractLoading]);
 
   const onMint = useCallback(async () => {
     // mintNFTを呼び出す
