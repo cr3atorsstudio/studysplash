@@ -29,13 +29,36 @@ import {
 } from "@web3inbox/widget-react";
 import useSendNotification from "@/hooks/useSendNotification";
 import { useSignMessage, useAccount } from "wagmi";
+import { useQuery } from "@airstack/airstack-react";
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
 const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
 
+const query = `query MyQuery {
+  Accounts(
+    input: {filter: {tokenAddress: {_in: ["0x26727ed4f5ba61d3772d1575bca011ae3aef5d36"]}}, blockchain: ethereum, limit: 200}
+  ) {
+    Account {
+      address {
+        addresses
+        domains {
+          name
+          isPrimary
+        }
+        socials {
+          dappName
+          profileName
+        }
+      }
+    }
+  }
+}`;
+
 const Dashboard: NextPageWithLayout = () => {
   const hasNft = useRecoilValue(globalStore.hasNft);
   const router = useRouter();
+
+  const { data, loading, error } = useQuery(query, { cache: false });
 
   // TODO: get from contract
   const role = "teacher";
@@ -239,6 +262,17 @@ const Dashboard: NextPageWithLayout = () => {
               >
                 Unsubscribe
               </Button>
+              <Button
+                onClick={handleTestNotification}
+                variant="outline"
+                isDisabled={!isW3iInitialized || !account}
+                colorScheme="red"
+                isLoading={isUnsubscribing}
+                loadingText="Unsubscribing..."
+                rounded="full"
+              >
+                Test Notification
+              </Button>
             </HStack>
           ) : (
             <Tooltip
@@ -251,7 +285,8 @@ const Dashboard: NextPageWithLayout = () => {
             >
               <Button
                 onClick={subscribe}
-                color="white"
+                borderColor={"brand.teacher"}
+                color="brand.teacher"
                 rounded="full"
                 variant="outline"
                 w="fit-content"

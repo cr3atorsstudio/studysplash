@@ -11,12 +11,8 @@ import {
   Grid,
   useRadioGroup,
 } from "@chakra-ui/react";
-import {
-  CredentialType,
-  IDKitWidget,
-  ISuccessResult,
-  useIDKit,
-} from "@worldcoin/idkit";
+import dynamic from "next/dynamic";
+import { CredentialType, ISuccessResult, useIDKit } from "@worldcoin/idkit";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { globalStore } from "@/store/global";
 import { useRouter } from "next/router";
@@ -27,6 +23,10 @@ import Registration from "@/components/Registration";
 import CustomRadio from "@/components/CustomRadio";
 
 const RoleMint: NextPageWithLayout = () => {
+  const IDKitWidget = dynamic(
+    () => import("@worldcoin/idkit").then((mod) => mod.IDKitWidget),
+    { ssr: false }
+  );
   const { open, setOpen } = useIDKit();
   const setProof = useSetRecoilState(globalStore.proof);
   const proof = useRecoilValue(globalStore.proof);
@@ -42,6 +42,7 @@ const RoleMint: NextPageWithLayout = () => {
 
   const onSuccess = (result: ISuccessResult) => {
     setProof(result.proof);
+    router.push("/mint/teacher/register");
   };
 
   const onMint = useCallback(() => {
@@ -50,9 +51,7 @@ const RoleMint: NextPageWithLayout = () => {
   }, []);
 
   const onWorldcoin = useCallback(() => {
-    setProof("ok");
-    // setOpen(true);
-    router.push("/mint/teacher/register");
+    setOpen(true);
   }, []);
 
   const handleChange = useCallback((value: any) => {}, []);
@@ -94,8 +93,14 @@ const RoleMint: NextPageWithLayout = () => {
         walletConnectProjectId={
           process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID
         }
-        credential_types={[CredentialType.Phone]}
-      />
+        credential_types={[CredentialType.Phone, CredentialType.Orb]}
+      >
+        {({ open }) => (
+          <Button width={"100%"} colorScheme="brand" onClick={open}>
+            Confirm
+          </Button>
+        )}
+      </IDKitWidget>
       <Registration role={role as string}>
         {role === "teacher" && (
           <Flex flexDir={"column"} alignItems={"center"} mb={5} mt={5}>

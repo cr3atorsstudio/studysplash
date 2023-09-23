@@ -5,10 +5,13 @@ import { GlobalStoreRoot } from "@/store/global";
 
 import { WagmiConfig } from "wagmi";
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
-import { mainnet, goerli } from "wagmi/chains";
+import { mainnet, sepolia, polygon } from "wagmi/chains";
 import { NextPage } from "next";
 import { ReactElement, ReactNode } from "react";
 import { theme } from "@/styles/theme";
+import { init } from "@airstack/airstack-react";
+
+init(process.env.NEXT_PUBLIC_AIRSTACK_API_KEY || "");
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -20,7 +23,7 @@ type AppPropsWithLayout = AppProps & {
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "";
 
-const chains = [goerli, mainnet];
+const chains = [sepolia, mainnet, polygon];
 const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
