@@ -62,12 +62,7 @@ const LinkItems: Array<LinkItemProps> = [
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
-  const {
-    account,
-    setAccount,
-    register: registerIdentity,
-    identityKey,
-  } = useW3iAccount();
+  const { account, setAccount, register: registerIdentity } = useW3iAccount();
   const { subscribe, unsubscribe, isSubscribed } = useManageSubscription({
     account,
   });
