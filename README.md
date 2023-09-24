@@ -42,6 +42,12 @@ ERC6551 user avatar address: [0xba92164ac188621c9f67f4ab8c9a28bd7bfd19f0](https:
 
 ERC1155 group course token address: [0x1AEe0199404C2DA8F65cd176e451272007Dd0809](https://sepolia-blockscout.scroll.io/address/0x1AEe0199404C2DA8F65cd176e451272007Dd0809#code)
 
+## Mantle Testnet contracts:
+
+ERC6551 user avatar address: [0x9D1723367e9F514f0c53e6c8B80a53fb1E08321b](https://explorer.testnet.mantle.xyz/address/0x9D1723367e9F514f0c53e6c8B80a53fb1E08321b)
+
+ERC1155 group course token address: [0xbA92164aC188621c9F67F4aB8C9a28bD7Bfd19f0](https://explorer.testnet.mantle.xyz/address/0xbA92164aC188621c9F67F4aB8C9a28bD7Bfd19f0)
+
 # team
 
 We are a team of Japanese female and non-binary creators working to close the gender gap in web3.
