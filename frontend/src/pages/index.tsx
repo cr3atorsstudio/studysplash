@@ -11,13 +11,15 @@ import type { NextPageWithLayout } from "./_app";
 import { ReactElement, useEffect } from "react";
 import Layout from "@/layout";
 import { useAccount } from "wagmi";
+import { useRouter } from "next/router";
 
 const Home: NextPageWithLayout = () => {
   const { address } = useAccount();
+  const router = useRouter();
 
   useEffect(() => {
     if (address) {
-      window.location.href = "/mint";
+      router.push("/dashboard");
     }
   }, [address]);
 

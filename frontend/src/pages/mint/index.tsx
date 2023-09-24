@@ -69,6 +69,8 @@ const Mint: NextPageWithLayout = () => {
           <Image src="/avatars/Group 3.png" />
           <Image src="/avatars/Group 1.png" />
         </HStack>
+        If you already have a NFT, please go to{" "}
+        <Link href={"/dashboard"}>Dashboard</Link>
       </Flex>
     </Flex>
   );
