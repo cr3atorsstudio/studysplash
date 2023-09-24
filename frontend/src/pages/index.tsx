@@ -19,7 +19,7 @@ const Home: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (address) {
-      router.push("/dashboard");
+      router.push("/mint");
     }
   }, [address]);
 
