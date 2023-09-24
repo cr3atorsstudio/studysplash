@@ -219,7 +219,7 @@ const Dashboard: NextPageWithLayout = () => {
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Choose a groun to close</ModalHeader>
+          <ModalHeader>Choose a group to close</ModalHeader>
           <ModalCloseButton />
           <ModalBody display={"flex"} flexDir={"column"} alignItems={"center"}>
             <Select>
