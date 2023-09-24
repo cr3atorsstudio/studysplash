@@ -237,6 +237,7 @@ const Dashboard: NextPageWithLayout = () => {
                     <Text fontSize={"2xl"}>☘️</Text>
                     <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
                       Creating and Managing Crypto Wallets
+                      Building B2B Marketing
                     </Text>
                   </HStack>
                 </CardBody>

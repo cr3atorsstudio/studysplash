@@ -8,15 +8,15 @@ const ActivityLog = () => {
         <List spacing={3}>
           <ListItem>
             <ListIcon as={IoFootsteps} color="green.500" />
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit
+            Bob has enrolled in your course!{" "}
           </ListItem>
           <ListItem>
             <ListIcon as={IoFootsteps} color="green.500" />
-            Assumenda, quia temporibus eveniet a libero incidunt suscipit
+            The next course is on 9/30!
           </ListItem>
           <ListItem>
             <ListIcon as={IoFootsteps} color="green.500" />
-            Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
+            You have a new chat message!
           </ListItem>
         </List>
       </CardBody>
