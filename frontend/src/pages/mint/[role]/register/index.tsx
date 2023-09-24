@@ -92,18 +92,18 @@ const Register: NextPageWithLayout = () => {
     isError,
     isLoading: isContractLoading,
   } = useContractRead({
-    address: "0x87968bd85f2c2c312935eaf4d1ef4e0843931b92",
+    address: "0xbA92164aC188621c9F67F4aB8C9a28bD7Bfd19f0",
     abi: ERC6551_ABI,
     functionName: "totalSupply",
-    chainId: 11155111,
+    chainId: 137,
   });
 
   //TODO: コントラクト新しくなったら引数かえる
   const { config, error } = usePrepareContractWrite({
-    address: "0x87968bd85f2c2c312935eaf4d1ef4e0843931b92",
+    address: "0xbA92164aC188621c9F67F4aB8C9a28bD7Bfd19f0",
     abi: ERC6551_ABI,
     functionName: "createNFT",
-    chainId: 11155111,
+    chainId: 137,
     args: [
       `https://studysplash.s3.amazonaws.com/metadata/user/${nextTokenId}.json`,
     ],

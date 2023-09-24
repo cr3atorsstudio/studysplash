@@ -5,7 +5,7 @@ import { GlobalStoreRoot } from "@/store/global";
 
 import { WagmiConfig } from "wagmi";
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
-import { mainnet, sepolia, polygon } from "wagmi/chains";
+import { mainnet, polygon, sepolia } from "wagmi/chains";
 import { NextPage } from "next";
 import { ReactElement, ReactNode } from "react";
 import { theme } from "@/styles/theme";
