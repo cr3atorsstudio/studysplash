@@ -7,7 +7,18 @@ import { Center } from "@chakra-ui/react";
 const Study: NextPageWithLayout = () => {
   return (
     <Center mt={10}>
-      <Youtube videoId="UDQlDF4TWYM" />
+      <Youtube
+        videoId="i65pAUGhXhs"
+        opts={{
+          height: "600px",
+          width: "900px",
+          playerVars: {
+            // https://developers.google.com/youtube/player_parameters
+            autoplay: 1,
+            start: 597,
+          },
+        }}
+      />
     </Center>
   );
 };

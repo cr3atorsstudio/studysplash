@@ -349,7 +349,14 @@ const Dashboard: NextPageWithLayout = () => {
               <CardBody justifyContent={"center"} pt={0}>
                 <Flex flexDir={"column"}>
                   <Link href={"/study"} target="_blank">
-                    <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
+                    <Text
+                      fontWeight={500}
+                      cursor={"pointer"}
+                      fontSize={"xl"}
+                      _hover={{
+                        color: "blue.500",
+                      }}
+                    >
                       {userData?.description.slice(0, 16)}
                     </Text>
                   </Link>
@@ -360,7 +367,7 @@ const Dashboard: NextPageWithLayout = () => {
                 </Flex>
 
                 <Flex flexDir={"column"}>
-                  <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
+                  <Text fontWeight={500} fontSize={"xl"}>
                     TokenThinkers
                   </Text>
                   <Text p={3} fontSize={"md"} color={"gray.500"}>
