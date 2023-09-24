@@ -139,9 +139,7 @@ const MobileNav = ({ onOpen, onClose, isOpen }: MobileProps) => {
       px={{ base: 2, md: 4 }}
       h="60px"
       alignItems="center"
-      bg={useColorModeValue("white", "gray.900")}
-      borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      bg={"#FFF9FB"}
       justifyContent={{ base: "space-between", md: "flex-end" }}
       pos={"fixed"}
       top={0}
@@ -160,8 +158,6 @@ const MobileNav = ({ onOpen, onClose, isOpen }: MobileProps) => {
     </Flex>
   );
 };
-
-
 
 const Sidebar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

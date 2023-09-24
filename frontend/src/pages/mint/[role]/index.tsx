@@ -52,7 +52,7 @@ const RoleMint: NextPageWithLayout = () => {
 
   const onWorldcoin = useCallback(() => {
     setOpen(true);
-    router.push("/mint/teacher/register");
+    // router.push("/mint/teacher/register");
   }, []);
 
   const handleChange = useCallback((value: any) => {}, []);

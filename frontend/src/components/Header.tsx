@@ -20,24 +20,17 @@ const WithSubnavigation = () => {
   const isConnected = useRecoilValue(globalStore.isConnected);
 
   return (
-    <Box position="fixed" w="100%" as="header" zIndex={9999}>
-      <Flex
-        bg={"#FFF9FB"}
-        color={"white"}
-        h={"80px"}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={"solid"}
-        align={"center"}
-      >
+    <Box position="fixed" w="100%" as="header" zIndex={9999} bg={"#FFF9FB"}>
+      <Flex h={"80px"} py={{ base: 2 }} px={{ base: 4 }} align={"center"} >
         <Flex
           flex={{ base: 1 }}
           justify={{ base: "center", md: "start" }}
           align={"center"}
+          
         >
           <Link href={"/"}>
             <Text
+            
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               color={"brand.student"}
               fontFamily={"'Bukhari Script', sans-serif"}
@@ -49,10 +42,7 @@ const WithSubnavigation = () => {
           </Link>
         </Flex>
 
-        <ConnectButton
-          isConnected={isConnected}
-          label={isConnected ? "Launch App" : "Connect Wallect"}
-        />
+        <ConnectButton isConnected={isConnected} />
       </Flex>
     </Box>
   );

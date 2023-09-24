@@ -22,6 +22,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Spinner,
   Tag,
   Text,
   Tooltip,
@@ -33,13 +34,13 @@ import Messages from "@/components/Messages";
 import {
   useInitWeb3InboxClient,
   useManageSubscription,
-  useMessages,
   useW3iAccount,
 } from "@web3inbox/widget-react";
 import useSendNotification from "@/hooks/useSendNotification";
 import { useSignMessage, useAccount } from "wagmi";
 import { useQuery } from "@airstack/airstack-react";
 import Link from "next/link";
+import { setTimeout } from "timers";
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
 const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
@@ -86,8 +87,10 @@ const Dashboard: NextPageWithLayout = () => {
     "BitBrains /",
   ]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [point, setPoint] = useState(100);
+  const [loading, setLoading] = useState(false);
 
-  const { data, loading, error } = useQuery(query, { cache: false });
+  const { data } = useQuery(query, { cache: false });
 
   const nfts = data?.TokenBalances?.TokenBalance;
 
@@ -109,6 +112,7 @@ const Dashboard: NextPageWithLayout = () => {
     nfts?.forEach((nft: any) => {
       const isOwner = nft?.owner.addresses.includes(walletAddress);
 
+      // TODO: delete ! after testing
       if (!isOwner) {
         setTokenUri(nft?.tokenNfts.tokenURI);
       }
@@ -186,9 +190,14 @@ const Dashboard: NextPageWithLayout = () => {
   }, [handleRegistration, identityKey]);
 
   const onCloseGroup = useCallback(() => {
-    setPastGroup([...pastGroup, `StudySplash /`]);
-    setUserData(null);
     onClose();
+    setLoading(true);
+    setTimeout(() => {
+      setPastGroup([...pastGroup, `StudySplash /`]);
+      setUserData(null);
+      setPoint(150);
+      setLoading(false);
+    }, 3000);
   }, []);
 
   const handleTestNotification = useCallback(async () => {
@@ -206,6 +215,7 @@ const Dashboard: NextPageWithLayout = () => {
   console.log(pastGroup);
   return (
     <>
+      <Spinner display={loading ? "absolute" : "none"} mx={"auto"} />
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -264,7 +274,7 @@ const Dashboard: NextPageWithLayout = () => {
                     />
                   </svg>
                   <Text fontSize={"4xl"} fontWeight={700}>
-                    100
+                    {point}
                   </Text>
                 </HStack>
               </CardBody>
@@ -365,7 +375,6 @@ const Dashboard: NextPageWithLayout = () => {
               </CardBody>
             </Card>
 
-
             <Card rounded={"2xl"} h={"160px"} px={2} w="full">
               <HStack justify={"space-between"}>
                 <CardHeader fontSize={"xl"} fontWeight={500} color={"gray.600"}>
@@ -376,7 +385,6 @@ const Dashboard: NextPageWithLayout = () => {
                 </Text>
               </HStack>
 
-
               <CardBody justifyContent={"center"}>
                 <HStack>
                   {pastGroup.map((course) => (
@@ -385,6 +393,16 @@ const Dashboard: NextPageWithLayout = () => {
                 </HStack>
               </CardBody>
             </Card>
+            <Flex ml="auto">
+              <Button
+                w={"200px"}
+                onClick={onOpen}
+                bg={"red.500"}
+                color={"white"}
+              >
+                Close group
+              </Button>
+            </Flex>
           </VStack>
         </Flex>
 
@@ -449,11 +467,6 @@ const Dashboard: NextPageWithLayout = () => {
           Activity Log
         </Heading>
         <ActivityLog />
-        <Flex justify={"end"} mt={3}>
-          <Button w={"200px"} onClick={onOpen} bg={"red.500"} color={"white"}>
-            Close group
-          </Button>
-        </Flex>
       </Flex>
     </>
   );
