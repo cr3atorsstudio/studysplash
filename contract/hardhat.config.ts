@@ -22,11 +22,16 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY ?? ""],
       gas: 50000000,
     },
+    base_goerli: {
+      url: "https://goerli.base.org",
+      accounts: [process.env.PRIVATE_KEY ?? ""],
+    },
   },
   defaultNetwork: "hardhat",
   etherscan: {
     apiKey: {
       scrollSepolia: "abc",
+      baseGoerli: `${process.env.ETHERSCAN_API_KEY}`,
     },
     customChains: [
       {
@@ -35,6 +40,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://sepolia-blockscout.scroll.io/api",
           browserURL: "https://sepolia-blockscout.scroll.io/",
+        },
+      },
+      {
+        network: "baseGoerli",
+        chainId: 84531,
+        urls: {
+          apiURL: "https://api-goerli.basescan.org/api",
+          browserURL: "https://goerli.basescan.org",
         },
       },
     ],
