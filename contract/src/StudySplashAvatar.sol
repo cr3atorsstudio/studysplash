@@ -12,7 +12,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./ERC6551.sol";
 
-contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
+contract StudySplashAvatar is
+    ERC721,
+    ERC721Enumerable,
+    ERC721URIStorage,
+    Ownable
+{
     using SafeMath for uint256;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdCounter = Counters.Counter(1);
@@ -57,14 +62,26 @@ contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownab
         return "https://studysplash.s3.amazonaws.com/metadata/user/";
     }
 
-    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
 
         string memory base = _baseURI();
         string memory jsonExtension = ".json";
 
         if (bytes(base).length > 0) {
-            return string(abi.encodePacked(base, Strings.toString(tokenId), jsonExtension));
+            return
+                string(
+                    abi.encodePacked(
+                        base,
+                        Strings.toString(tokenId),
+                        jsonExtension
+                    )
+                );
         }
         return Strings.toString(tokenId);
     }
@@ -72,12 +89,17 @@ contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownab
     function _setTeacherStatus(address user, bool status) internal {
         isTeacher[user] = status;
     }
+
     function setRegistryAddress(address _registry) public onlyOwner {
         registry = _registry;
     }
-    function setimplementationAddress(address _implementation) public onlyOwner {
+
+    function setimplementationAddress(
+        address _implementation
+    ) public onlyOwner {
         implementation = _implementation;
     }
+
     function setChainId(uint256 _chainId) public onlyOwner {
         chainId = _chainId;
     }
@@ -115,7 +137,7 @@ contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownab
         return _tbaAddress;
     }
 
-    // view functions (for frontend) 
+    // view functions (for frontend)
     function getNFTInfos() public view returns (NFTInfo[] memory) {
         NFTInfo[] memory allNFTInfos = new NFTInfo[](_tokenIdCounter.current());
 
@@ -132,10 +154,7 @@ contract  StudySplashAvatar is ERC721, ERC721Enumerable, ERC721URIStorage, Ownab
     ) public view returns (uint256, address) {
         uint256 tokenId = creatorToTokenId[_creator];
         require(tokenId != 0, "No NFT found for this creator");
-        return (
-            _nftInfos[tokenId].tokenId,
-            _nftInfos[tokenId].tbaAddress
-        );
+        return (_nftInfos[tokenId].tokenId, _nftInfos[tokenId].tbaAddress);
     }
 
     // The following functions are overrides required by Solidity.
