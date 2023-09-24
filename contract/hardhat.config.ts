@@ -17,10 +17,27 @@ const config: HardhatUserConfig = {
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [process.env.PRIVATE_KEY ?? ""],
     },
+    scroll: {
+      url: `https://sepolia-rpc.scroll.io`,
+      accounts: [process.env.PRIVATE_KEY ?? ""],
+      gas: 50000000,
+    },
   },
   defaultNetwork: "hardhat",
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      scrollSepolia: "abc",
+    },
+    customChains: [
+      {
+        network: "scrollSepolia",
+        chainId: 534351,
+        urls: {
+          apiURL: "https://sepolia-blockscout.scroll.io/api",
+          browserURL: "https://sepolia-blockscout.scroll.io/",
+        },
+      },
+    ],
   },
   paths: {
     sources: "./src",
