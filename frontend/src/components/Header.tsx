@@ -4,6 +4,7 @@ import {
   Text,
   useColorModeValue,
   useBreakpointValue,
+  Image,
 } from "@chakra-ui/react";
 import ConnectButton from "./ConnectButton";
 import { M_PLUS_1 } from "next/font/google";
@@ -21,24 +22,14 @@ const WithSubnavigation = () => {
 
   return (
     <Box position="fixed" w="100%" as="header" zIndex={9999} bg={"#FFF9FB"}>
-      <Flex h={"80px"} py={{ base: 2 }} px={{ base: 4 }} align={"center"} >
+      <Flex h={"80px"} py={{ base: 2 }} px={{ base: 4 }} align={"center"}>
         <Flex
           flex={{ base: 1 }}
           justify={{ base: "center", md: "start" }}
           align={"center"}
-          
         >
           <Link href={"/"}>
-            <Text
-            
-              textAlign={useBreakpointValue({ base: "center", md: "left" })}
-              color={"brand.student"}
-              fontFamily={"'Bukhari Script', sans-serif"}
-              fontSize={{ md: "3xl", base: "xl" }}
-              ml={{ md: 0, base: 2 }}
-            >
-              StudySplash
-            </Text>
+            <Image src="/StudySplash.png" w={"180px"} />
           </Link>
         </Flex>
 
