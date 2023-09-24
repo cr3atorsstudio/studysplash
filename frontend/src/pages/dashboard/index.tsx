@@ -14,10 +14,19 @@ import {
   HStack,
   Heading,
   Image,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
   Tag,
   Text,
   Tooltip,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import ActivityLog from "@/components/ActivityLog";
 import Messages from "@/components/Messages";
@@ -30,6 +39,7 @@ import {
 import useSendNotification from "@/hooks/useSendNotification";
 import { useSignMessage, useAccount } from "wagmi";
 import { useQuery } from "@airstack/airstack-react";
+import Link from "next/link";
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
 const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
@@ -55,13 +65,27 @@ const Dashboard: NextPageWithLayout = () => {
   const router = useRouter();
   const walletAddress = useRecoilValue(globalStore.userAddress);
   const [tokenUri, setTokenUri] = useState("");
-  const [userData, setUserData] = useState(null);
-  const [userInfo, setUserInfo] = useState("");
+  const [userData, setUserData] = useState({
+    name: "",
+    image: "",
+    description: "",
+    attributes: [
+      {
+        value: "",
+      },
+    ],
+  });
+  const [userInfo, setUserInfo] = useState({
+    image: "",
+    role: "",
+    name: "",
+  });
   const [pastGroup, setPastGroup] = useState([
     "BlockBustersStudy /",
     "MintMindset /",
     "BitBrains /",
   ]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { data, loading, error } = useQuery(query, { cache: false });
 
@@ -118,10 +142,7 @@ const Dashboard: NextPageWithLayout = () => {
   } = useManageSubscription(account);
 
   const { signMessageAsync } = useSignMessage();
-
   const { handleSendNotification, isSending } = useSendNotification();
-
-  const { messages, deleteMessage } = useMessages(account);
 
   const { address } = useAccount({
     onDisconnect: () => {
@@ -167,6 +188,7 @@ const Dashboard: NextPageWithLayout = () => {
   const onCloseGroup = useCallback(() => {
     setPastGroup([...pastGroup, `StudySplash /`]);
     setUserData(null);
+    onClose();
   }, []);
 
   const handleTestNotification = useCallback(async () => {
@@ -184,6 +206,26 @@ const Dashboard: NextPageWithLayout = () => {
   console.log(pastGroup);
   return (
     <>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Choose a groun to close</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} flexDir={"column"} alignItems={"center"}>
+            <Select>
+              <option>TokenThinkers</option>
+              <option>StudySplash</option>
+            </Select>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button bg={"red.500"} color="white" onClick={onCloseGroup}>
+              Close the group
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <Flex flexDir={"column"} p={10} w={"100%"}>
         <Flex w="full">
           <VStack w="800px">
@@ -296,15 +338,18 @@ const Dashboard: NextPageWithLayout = () => {
 
               <CardBody justifyContent={"center"} pt={0}>
                 <Flex flexDir={"column"}>
-                  <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
-                    {userData?.description.slice(0, 16)}
-                  </Text>
+                  <Link href={"/study"} target="_blank">
+                    <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
+                      {userData?.description.slice(0, 16)}
+                    </Text>
+                  </Link>
+
                   <Text p={3} fontSize={"md"} color={"gray.500"}>
                     {userData?.description}
                   </Text>
                 </Flex>
 
-                <Flex flexDir={"column"} mt={2}>
+                <Flex flexDir={"column"}>
                   <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
                     TokenThinkers
                   </Text>
@@ -403,13 +448,8 @@ const Dashboard: NextPageWithLayout = () => {
         </Heading>
         <ActivityLog />
         <Flex justify={"end"} mt={3}>
-          <Button
-            w={"200px"}
-            onClick={onCloseGroup}
-            bg="red.500"
-            color={"white"}
-          >
-            Close this group
+          <Button w={"200px"} onClick={onOpen} bg={"red.500"} color={"white"}>
+            Close group
           </Button>
         </Flex>
       </Flex>

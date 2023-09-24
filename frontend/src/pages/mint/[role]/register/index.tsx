@@ -70,7 +70,6 @@ const Register: NextPageWithLayout = () => {
       duration: 2000,
     });
   };
-  console.log("nextTokenId", nextTokenId);
 
   const uploadToS3 = async (jsonData: any) => {
     const response = await fetch("/api/upload", {

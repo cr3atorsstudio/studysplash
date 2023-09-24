@@ -113,3 +113,7 @@ a {
   -webkit-background-clip: text; /* テキストで切り抜く */
   -webkit-text-fill-color: transparent; /* 切り抜いた部分は背景を表示 */
 }
+
+--w3m-z-index {
+  z-index: 9999999;
+}

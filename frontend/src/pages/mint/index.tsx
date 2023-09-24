@@ -1,18 +1,37 @@
 import SharedModal from "@/components/SharedModal";
 import Layout from "@/layout";
-import { Button, ModalBody, Stack, Text, Flex } from "@chakra-ui/react";
+import {
+  Button,
+  ModalBody,
+  Stack,
+  Text,
+  Flex,
+  Image,
+  HStack,
+} from "@chakra-ui/react";
 import type { NextPageWithLayout } from "../_app";
 import Link from "next/link";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
+import { useAccount } from "wagmi";
+import { useRouter } from "next/router";
 
 const Mint: NextPageWithLayout = () => {
+  const { address, isConnecting, isDisconnected } = useAccount();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!address) {
+      router.push("/");
+    }
+  }, [address, isConnecting, isDisconnected]);
   return (
-    <SharedModal size="md">
-      <ModalBody>
+    <Flex flexDir={"column"} alignItems={"center"} mb={5} mt={40}>
+      <Flex flexDir={"column"} alignItems={"center"}>
         <Text
           mb={10}
           textAlign={"center"}
-          fontSize={"2xl"}
+          fontSize={"4xl"}
           color={"#252627"}
           fontWeight={500}
         >
@@ -45,8 +64,12 @@ const Mint: NextPageWithLayout = () => {
             </Link>
           </Stack>
         </Flex>
-      </ModalBody>
-    </SharedModal>
+        <HStack>
+          <Image src="/avatars/Group 3.png" />
+          <Image src="/avatars/Group 1.png" />
+        </HStack>
+      </Flex>
+    </Flex>
   );
 };
 

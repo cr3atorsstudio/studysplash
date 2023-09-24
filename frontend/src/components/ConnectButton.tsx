@@ -1,7 +1,5 @@
-import { Button, IconButton } from "@chakra-ui/react";
+import { IconButton } from "@chakra-ui/react";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import Link from "next/link";
-import { LuWallet } from "react-icons/lu";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 interface Props {
   isConnected: boolean;
