@@ -2,7 +2,7 @@ import DashboardLayout from "@/layout/dashboard";
 import { globalStore } from "@/store/global";
 import { NextPageWithLayout } from "../_app";
 import { useRouter } from "next/navigation";
-import { ReactElement, useCallback, useEffect } from "react";
+import { ReactElement, useCallback, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import {
   Accordion,
@@ -35,20 +35,16 @@ const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
 const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
 
 const query = `query MyQuery {
-  Accounts(
-    input: {filter: {tokenAddress: {_in: ["0x26727ed4f5ba61d3772d1575bca011ae3aef5d36"]}}, blockchain: ethereum, limit: 200}
+  TokenBalances(
+    input: {filter: {tokenAddress: {_in: "0xbA92164aC188621c9F67F4aB8C9a28bD7Bfd19f0"}}, blockchain: polygon}
   ) {
-    Account {
-      address {
+    TokenBalance {
+      tokenNfts {
+        tokenId
+        tokenURI
+      }
+      owner {
         addresses
-        domains {
-          name
-          isPrimary
-        }
-        socials {
-          dappName
-          profileName
-        }
       }
     }
   }
@@ -57,12 +53,49 @@ const query = `query MyQuery {
 const Dashboard: NextPageWithLayout = () => {
   const hasNft = useRecoilValue(globalStore.hasNft);
   const router = useRouter();
+  const walletAddress = useRecoilValue(globalStore.userAddress);
+  const [tokenUri, setTokenUri] = useState("");
+  const [userData, setUserData] = useState(null);
+  const [userInfo, setUserInfo] = useState("");
+  const [pastGroup, setPastGroup] = useState([
+    "BlockBustersStudy /",
+    "MintMindset /",
+    "BitBrains /",
+  ]);
 
   const { data, loading, error } = useQuery(query, { cache: false });
 
-  // TODO: get from contract
-  const role = "teacher";
-  const color = role === "teacher" ? "brand.teacher" : "brand.student";
+  const nfts = data?.TokenBalances?.TokenBalance;
+
+  function pullJson() {
+    if (tokenUri === "") return;
+    fetch(tokenUri, {})
+      .then((response) => response.json())
+      .then((data) => {
+        setUserData(data);
+        setUserInfo({
+          image: data?.image,
+          role: data?.attributes[0].value,
+          name: data?.name,
+        });
+      });
+  }
+
+  useEffect(() => {
+    nfts?.forEach((nft: any) => {
+      const isOwner = nft?.owner.addresses.includes(walletAddress);
+
+      if (!isOwner) {
+        setTokenUri(nft?.tokenNfts.tokenURI);
+      }
+    });
+
+    if (tokenUri === "") return;
+
+    pullJson();
+  }, [tokenUri, nfts]);
+
+  const color = userInfo.role === "teacher" ? "brand.teacher" : "brand.student";
 
   useEffect(() => {
     if (!hasNft) {
@@ -131,6 +164,11 @@ const Dashboard: NextPageWithLayout = () => {
     }
   }, [handleRegistration, identityKey]);
 
+  const onCloseGroup = useCallback(() => {
+    setPastGroup([...pastGroup, `StudySplash /`]);
+    setUserData(null);
+  }, []);
+
   const handleTestNotification = useCallback(async () => {
     if (isSubscribed) {
       handleSendNotification({
@@ -142,138 +180,170 @@ const Dashboard: NextPageWithLayout = () => {
       });
     }
   }, [handleSendNotification, isSubscribed]);
+
+  console.log(pastGroup);
   return (
     <>
-      {hasNft && (
-        <Flex flexDir={"column"} p={10} w={"100%"}>
-          <Flex w="full">
-            <VStack w="800px">
+      <Flex flexDir={"column"} p={10} w={"100%"}>
+        <Flex w="full">
+          <VStack w="800px">
+            {userInfo?.image && (
               <Image
-                src="https://studysplash.s3.us-east-1.amazonaws.com/assets/teacher_1.png"
+                src={userInfo?.image}
                 w={"300px"}
                 h={"300px"}
                 rounded={"32px"}
                 align={"top"}
               />
-              <Card w="full" rounded={"20px"} mt={2}>
-                <CardBody>
-                  <HStack justify={"space-between"} mx={5}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="36"
-                      height="36"
-                      viewBox="0 0 36 36"
-                      fill="none"
-                    >
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="17.75"
-                        fill="#78B4CE"
-                        stroke="#4B88A2"
-                        strokeWidth="0.5"
-                      />
-                      <circle cx="18" cy="18" r="12" fill="#4B88A2" />
-                      <path
-                        d="M15.61 19.14V17.664H19.012C19.48 17.664 19.894 17.568 20.254 17.376C20.626 17.184 20.914 16.914 21.118 16.566C21.334 16.218 21.442 15.804 21.442 15.324C21.442 14.844 21.334 14.43 21.118 14.082C20.914 13.734 20.626 13.464 20.254 13.272C19.894 13.08 19.48 12.984 19.012 12.984H15.61V11.508H19.12C19.888 11.508 20.572 11.664 21.172 11.976C21.784 12.288 22.264 12.732 22.612 13.308C22.972 13.872 23.152 14.544 23.152 15.324C23.152 16.092 22.972 16.764 22.612 17.34C22.264 17.904 21.784 18.348 21.172 18.672C20.572 18.984 19.888 19.14 19.12 19.14H15.61ZM14.476 24V11.508H16.168V24H14.476Z"
-                        fill="white"
-                      />
-                    </svg>
-                    <Text fontSize={"4xl"} fontWeight={700}>
-                      100
-                    </Text>
-                  </HStack>
-                </CardBody>
-              </Card>
-            </VStack>
+            )}
 
-            <VStack w="full" ml={5} mt={1} align={"start"}>
-              <Flex align={"center"}>
-                <Tag
-                  color={"white"}
-                  bg={color}
-                  rounded={"full"}
-                  size={"lg"}
-                  h="20px"
-                  mr={2}
+            <Card w="80%" rounded={"20px"} mt={2}>
+              <CardBody>
+                <HStack justify={"space-between"} mx={5}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="36"
+                    height="36"
+                    viewBox="0 0 36 36"
+                    fill="none"
+                  >
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="17.75"
+                      fill="#78B4CE"
+                      stroke="#4B88A2"
+                      strokeWidth="0.5"
+                    />
+                    <circle cx="18" cy="18" r="12" fill="#4B88A2" />
+                    <path
+                      d="M15.61 19.14V17.664H19.012C19.48 17.664 19.894 17.568 20.254 17.376C20.626 17.184 20.914 16.914 21.118 16.566C21.334 16.218 21.442 15.804 21.442 15.324C21.442 14.844 21.334 14.43 21.118 14.082C20.914 13.734 20.626 13.464 20.254 13.272C19.894 13.08 19.48 12.984 19.012 12.984H15.61V11.508H19.12C19.888 11.508 20.572 11.664 21.172 11.976C21.784 12.288 22.264 12.732 22.612 13.308C22.972 13.872 23.152 14.544 23.152 15.324C23.152 16.092 22.972 16.764 22.612 17.34C22.264 17.904 21.784 18.348 21.172 18.672C20.572 18.984 19.888 19.14 19.12 19.14H15.61ZM14.476 24V11.508H16.168V24H14.476Z"
+                      fill="white"
+                    />
+                  </svg>
+                  <Text fontSize={"4xl"} fontWeight={700}>
+                    100
+                  </Text>
+                </HStack>
+              </CardBody>
+            </Card>
+
+            <Card w="80%" rounded={"20px"} mt={2}>
+              <CardHeader>
+                <Text fontSize={"xl"}>Currently enrolled students</Text>
+              </CardHeader>
+              <CardBody>
+                <HStack justify={"space-between"} mx={5}>
+                  <Image
+                    w={12}
+                    h={12}
+                    rounded={"full"}
+                    src="https://studysplash.s3.us-east-1.amazonaws.com/assets/students_1.png"
+                  />
+                  <Image
+                    w={12}
+                    h={12}
+                    rounded={"full"}
+                    src="https://studysplash.s3.us-east-1.amazonaws.com/assets/students_2.png"
+                  />
+                  <Image
+                    w={12}
+                    h={12}
+                    rounded={"full"}
+                    src="https://studysplash.s3.us-east-1.amazonaws.com/assets/students_3.png"
+                  />
+                  <Image
+                    w={12}
+                    h={12}
+                    rounded={"full"}
+                    src="https://studysplash.s3.us-east-1.amazonaws.com/assets/students_4.png"
+                  />
+                </HStack>
+              </CardBody>
+            </Card>
+          </VStack>
+
+          <VStack w="full" ml={5} mt={1} align={"start"}>
+            <Flex align={"center"}>
+              <Tag
+                color={"white"}
+                bg={color}
+                rounded={"full"}
+                size={"lg"}
+                h="20px"
+                mr={2}
+              >
+                {userInfo?.role}
+              </Tag>
+              <Text fontSize={"5xl"} fontWeight={500}>
+                {userInfo?.name}
+              </Text>
+            </Flex>
+
+            <Card rounded={"2xl"} px={2} w="full">
+              <HStack justify={"space-between"}>
+                <CardHeader
+                  fontSize={"xl"}
+                  fontWeight={500}
+                  color={"brand.teacher"}
                 >
-                  Teacher
-                </Tag>
-                <Text fontSize={"5xl"} fontWeight={500}>
-                  Alice
+                  Currently Hosting Groups
+                </CardHeader>
+                <Text fontWeight={500} color={"#FF7777"}>
+                  More Details
                 </Text>
-              </Flex>
+              </HStack>
 
-              <Card rounded={"2xl"} h={"160px"} px={2} w="full">
-                <HStack justify={"space-between"}>
-                  <CardHeader fontWeight={500}>
-                    Currently Perticipating
-                  </CardHeader>
-                  <Text fontWeight={500} color={"#FF7777"}>
-                    More Details
+              <CardBody justifyContent={"center"} pt={0}>
+                <Flex flexDir={"column"}>
+                  <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
+                    {userData?.description.slice(0, 16)}
                   </Text>
-                </HStack>
-
-                <CardBody justifyContent={"center"}>
-                  <HStack>
-                    <Text fontSize={"2xl"}>🐼</Text>
-                    <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
-                      Creating and Managing Crypto Wallets
-                    </Text>
-                  </HStack>
-                </CardBody>
-              </Card>
-
-              <Card rounded={"2xl"} h={"160px"} px={2} w="full">
-                <HStack justify={"space-between"}>
-                  <CardHeader fontWeight={500}>Past Groups</CardHeader>
-                  <Text fontWeight={500} color={"#FF7777"} cursor={"pointer"}>
-                    More Details
+                  <Text p={3} fontSize={"md"} color={"gray.500"}>
+                    {userData?.description}
                   </Text>
+                </Flex>
+
+                <Flex flexDir={"column"} mt={2}>
+                  <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
+                    TokenThinkers
+                  </Text>
+                  <Text p={3} fontSize={"md"} color={"gray.500"}>
+                    Dive deep into the world of cryptocurrency with us! We're a
+                    passionate group of crypto enthusiasts dedicated to
+                    understanding the intricacies of blockchain technology and
+                    the future of digital currencies. From Bitcoin to Ethereum
+                    and beyond, join us in our quest to demystify the token
+                    universe.
+                  </Text>
+                </Flex>
+              </CardBody>
+            </Card>
+
+            <Card rounded={"2xl"} h={"160px"} px={2} w="full">
+              <HStack justify={"space-between"}>
+                <CardHeader fontSize={"xl"} fontWeight={500} color={"gray.600"}>
+                  Past Hosted Groups
+                </CardHeader>{" "}
+                <Text fontWeight={500} color={"#FF7777"} cursor={"pointer"}>
+                  More Details
+                </Text>
+              </HStack>
+
+              <CardBody justifyContent={"center"}>
+                <HStack>
+                  {pastGroup.map((course) => (
+                    <Text>{course}</Text>
+                  ))}
                 </HStack>
+              </CardBody>
+            </Card>
+          </VStack>
+        </Flex>
 
-                <CardBody justifyContent={"center"}>
-                  <HStack>
-                    <Text fontSize={"2xl"}>☘️</Text>
-                    <Text fontWeight={500} cursor={"pointer"} fontSize={"xl"}>
-                      Creating and Managing Crypto Wallets
-                    </Text>
-                  </HStack>
-                </CardBody>
-              </Card>
-            </VStack>
-          </Flex>
-
-          {isSubscribed && (
-            <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">
-              <Messages />
-            </Accordion>
-          )}
+        <Accordion defaultIndex={[1]} allowToggle mt={10} rounded="xl">
           {isSubscribed ? (
-            <HStack mt={3}>
-              <Button
-                onClick={unsubscribe}
-                variant="outline"
-                isDisabled={!isW3iInitialized || !account}
-                colorScheme="red"
-                isLoading={isUnsubscribing}
-                loadingText="Unsubscribing..."
-                rounded="full"
-              >
-                Unsubscribe
-              </Button>
-              <Button
-                onClick={handleTestNotification}
-                variant="outline"
-                isDisabled={!isW3iInitialized || !account}
-                colorScheme="red"
-                isLoading={isUnsubscribing}
-                loadingText="Unsubscribing..."
-                rounded="full"
-              >
-                Test Notification
-              </Button>
-            </HStack>
+            <Messages />
           ) : (
             <Tooltip
               label={
@@ -295,17 +365,54 @@ const Dashboard: NextPageWithLayout = () => {
                 loadingText="Subscribing..."
                 isDisabled={!Boolean(address) || !Boolean(account)}
               >
-                Subscribe
+                Subscribe Notification from Students
               </Button>
             </Tooltip>
           )}
+        </Accordion>
 
-          <Heading textAlign={"center"} as={"h3"} color={"white"}>
-            Activity Log
-          </Heading>
-          <ActivityLog />
+        {isSubscribed && (
+          <Flex mt={3}>
+            <Button
+              onClick={unsubscribe}
+              variant="outline"
+              isDisabled={!isW3iInitialized || !account}
+              colorScheme="red"
+              isLoading={isUnsubscribing}
+              loadingText="Unsubscribing..."
+              rounded="full"
+            >
+              Unsubscribe
+            </Button>
+            <Button
+              onClick={handleTestNotification}
+              variant="outline"
+              isDisabled={!isW3iInitialized || !account}
+              colorScheme="red"
+              isLoading={isUnsubscribing}
+              loadingText="Unsubscribing..."
+              rounded="full"
+            >
+              Test Notification
+            </Button>
+          </Flex>
+        )}
+
+        <Heading mt={10} mb={3} as={"h6"}>
+          Activity Log
+        </Heading>
+        <ActivityLog />
+        <Flex justify={"end"} mt={3}>
+          <Button
+            w={"200px"}
+            onClick={onCloseGroup}
+            bg="red.500"
+            color={"white"}
+          >
+            Close this group
+          </Button>
         </Flex>
-      )}
+      </Flex>
     </>
   );
 };

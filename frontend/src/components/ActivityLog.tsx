@@ -3,20 +3,20 @@ import { IoFootsteps } from "react-icons/io5";
 
 const ActivityLog = () => {
   return (
-    <Card w="full" rounded={"20px"} h={"200px"}>
+    <Card w="full" rounded={"20px"}>
       <CardBody fontSize={"xl"}>
         <List spacing={3}>
           <ListItem>
             <ListIcon as={IoFootsteps} color="green.500" />
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit
+            Student Miho has joined your StudySplach group!
           </ListItem>
           <ListItem>
             <ListIcon as={IoFootsteps} color="green.500" />
-            Assumenda, quia temporibus eveniet a libero incidunt suscipit
+            Student Maho has finished the group!
           </ListItem>
           <ListItem>
             <ListIcon as={IoFootsteps} color="green.500" />
-            Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
+            There are two new nothications!
           </ListItem>
         </List>
       </CardBody>
