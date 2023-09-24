@@ -37,7 +37,7 @@ contract StudySplashAvatar is
 
     address public registry = 0x02101dfB77FDE026414827Fdc604ddAF224F0921;
     address public implementation = 0x2D25602551487C3f3354dD80D76D54383A243358;
-    uint256 public chainId = 11155111;
+    uint256 public chainId = 5000;
 
     function createNFT(bool isTeacherStatus) public {
         require(!hasMinted[msg.sender], "You have already minted a token");

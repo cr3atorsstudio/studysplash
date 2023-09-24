@@ -33,6 +33,9 @@ const config: HardhatUserConfig = {
     chiado: {
       url: "https://rpc.chiadochain.net",
       gasPrice: 1000000000,
+    },
+    mantleTestnet: {
+      url: "https://rpc.testnet.mantle.xyz/",
       accounts: [process.env.PRIVATE_KEY ?? ""],
     },
   },
@@ -43,6 +46,7 @@ const config: HardhatUserConfig = {
       baseGoerli: `${process.env.ETHERSCAN_API_KEY}`,
       chiado: `${process.env.GNOSISS_API_KEY}`,
       gnosis: `${process.env.GNOSISS_API_KEY}`,
+      mantleTestnet: "abc",
     },
     customChains: [
       {
@@ -51,6 +55,15 @@ const config: HardhatUserConfig = {
         urls: {
           //Blockscout
           apiURL: "https://gnosis-chiado.blockscout.com/api",
+          browserURL: "https://blockscout.com/gnosis/chiado",
+        },
+      },
+      {
+        network: "mantleTestnet",
+        chainId: 5001,
+        urls: {
+          //Blockscout
+          apiURL: "https://explorer.testnet.mantle.xyz/api",
           browserURL: "https://blockscout.com/gnosis/chiado",
         },
       },
