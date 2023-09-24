@@ -55,6 +55,11 @@ const RoleMint: NextPageWithLayout = () => {
     // router.push("/mint/teacher/register");
   }, []);
 
+  const skipWordcoin = useCallback(() => {
+    setOpen(true);
+    router.push("/mint/teacher/register");
+  }, []);
+
   const handleChange = useCallback((value: any) => {}, []);
 
   const { value, getRadioProps } = useRadioGroup({
@@ -108,6 +113,15 @@ const RoleMint: NextPageWithLayout = () => {
             <Text align={"center"}>Please verify with worldcoin first</Text>
             <Button bg={color} color={"white"} onClick={onWorldcoin} my={3}>
               Verify with worldcoin
+            </Button>
+            <Button
+              mt={5}
+              color={"white"}
+              bg={"red.500"}
+              onClick={skipWordcoin}
+              size={"sm"}
+            >
+              Skip worldcoin verification (for testing purposes)
             </Button>
           </Flex>
         )}
