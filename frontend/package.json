@@ -15,7 +15,6 @@
     "@chakra-ui/react": "^2.8.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@huddle01/react": "^0.0.15",
     "@mui/icons-material": "^5.14.9",
     "@next/font": "^13.4.19",
     "@types/node": "20.6.0",
