@@ -6,6 +6,7 @@ import { ReactElement, useCallback, useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import {
   Accordion,
+  Box,
   Button,
   Card,
   CardBody,
@@ -28,6 +29,7 @@ import {
   Tooltip,
   VStack,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import ActivityLog from "@/components/ActivityLog";
 import Messages from "@/components/Messages";
@@ -37,13 +39,21 @@ import {
   useW3iAccount,
 } from "@web3inbox/widget-react";
 import useSendNotification from "@/hooks/useSendNotification";
-import { useSignMessage, useAccount } from "wagmi";
+import {
+  useSignMessage,
+  useAccount,
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
 import { useQuery } from "@airstack/airstack-react";
 import Link from "next/link";
 import { setTimeout } from "timers";
+import { APE_ABI } from "@/config/ape";
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID as string;
 const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
+const STUDENT_WALLET_ADDRESS = "0x15BC88b803aCB95BAEca7C549B20A72b1cC5dD25";
 
 const query = `query MyQuery {
   TokenBalances(
@@ -91,6 +101,7 @@ const Dashboard: NextPageWithLayout = () => {
   const [loading, setLoading] = useState(false);
 
   const { data } = useQuery(query, { cache: false });
+  const toast = useToast();
 
   const nfts = data?.TokenBalances?.TokenBalance;
 
@@ -188,17 +199,51 @@ const Dashboard: NextPageWithLayout = () => {
       handleRegistration();
     }
   }, [handleRegistration, identityKey]);
+  const { config, error } = usePrepareContractWrite({
+    address: "0x328507DC29C95c170B56a1b3A758eB7a9E73455c",
+    abi: APE_ABI,
+    functionName: "transfer",
+    chainId: 5,
+    args: [STUDENT_WALLET_ADDRESS, 100],
+  });
+  console.log("config", config);
+  //@ts-ignore
+  const {
+    data: writeData,
+    isError: isWriteError,
+    isLoading: isContractWriteLoading,
+    write,
+  } = useContractWrite(config);
 
   const onCloseGroup = useCallback(() => {
     onClose();
+
     setLoading(true);
-    setTimeout(() => {
+    console.log("transfer ape coin");
+    write?.();
+  }, [write]);
+
+  const { isLoading: isWaitContractLoading, isSuccess: isWaitContractSuccess } =
+    useWaitForTransaction({
+      hash: writeData?.hash,
+    });
+
+  useEffect(() => {
+    //TODO: 失敗したとき
+    if (isWaitContractSuccess) {
+      toast({
+        title: `Sent point to students successfully!`,
+        status: "success",
+        duration: 2000,
+      });
       setPastGroup([...pastGroup, `StudySplash /`]);
       setUserData(null);
       setPoint(150);
       setLoading(false);
-    }, 3000);
-  }, []);
+    }
+  }, [isWaitContractSuccess]);
+  console.log(isWaitContractSuccess);
+  console.log("writeData", writeData);
 
   const handleTestNotification = useCallback(async () => {
     if (isSubscribed) {
@@ -214,8 +259,8 @@ const Dashboard: NextPageWithLayout = () => {
 
   console.log(pastGroup);
   return (
-    <>
-      <Spinner display={loading ? "absolute" : "none"} mx={"auto"} />
+    <Box display={"relative"} height={"100vh"}>
+      <Spinner display={loading ? "absolute" : "none"} />
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -475,7 +520,7 @@ const Dashboard: NextPageWithLayout = () => {
         </Heading>
         <ActivityLog />
       </Flex>
-    </>
+    </Box>
   );
 };
 
