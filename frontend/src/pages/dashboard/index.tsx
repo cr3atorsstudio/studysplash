@@ -112,8 +112,7 @@ const Dashboard: NextPageWithLayout = () => {
     nfts?.forEach((nft: any) => {
       const isOwner = nft?.owner.addresses.includes(walletAddress);
 
-      // TODO: delete ! after testing
-      if (!isOwner) {
+      if (isOwner) {
         setTokenUri(nft?.tokenNfts.tokenURI);
       }
     });
