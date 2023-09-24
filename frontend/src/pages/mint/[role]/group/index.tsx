@@ -1,5 +1,5 @@
 import { NextPageWithLayout } from "../../../_app";
-import { ReactElement, useCallback, useEffect, useState } from "react";
+import { ReactElement, use, useCallback, useEffect, useState } from "react";
 import Layout from "@/layout";
 import Registration from "@/components/Registration";
 import {
@@ -19,18 +19,20 @@ import CustomRadio from "@/components/CustomRadio";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { globalStore } from "@/store/global";
 import {
+  useAccount,
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import { ERC1155_ABI } from "@/config/erc1155ABI";
+import { ERC6551_ABI } from "@/config/erc1155ABI";
 
 const Group: NextPageWithLayout = () => {
   const router = useRouter();
   const [groupName, setGroupName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [nextTokenId, setNextTokenId] = useState(0);
+  const [contractConfig, setContractConfig] = useState();
   const setIsLoading = useSetRecoilState(globalStore.isLoading);
   const isLoading = useRecoilValue(globalStore.isLoading);
   const role = router.query.role;
@@ -57,20 +59,23 @@ const Group: NextPageWithLayout = () => {
     });
   };
 
+  const { address, isConnected } = useAccount();
+
   const { config, error } = usePrepareContractWrite({
-    address: "cre",
-    abi: ERC1155_ABI,
+    address: "0x8e8233c85ef160859349dd3da61a9f58fa9d07ef",
+    abi: ERC6551_ABI,
     functionName: "mint",
-    chainId: 11155111,
-    args: ["0xE7FC4e1a7F980D30d4e408E3d3C0166B8bc68B30", nextTokenId],
+    chainId: 137,
+    args: [address, nextTokenId],
   });
+  console.log("error", error);
+  //@ts-ignore
   const {
     data: writeData,
     isError: isWriteError,
     isLoading: isContractWriteLoading,
     write,
   } = useContractWrite(config);
-  console.log("error", error);
 
   useEffect(() => {
     const unixTime = Math.floor(Date.now() / 1000);
