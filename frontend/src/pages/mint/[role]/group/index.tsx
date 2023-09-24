@@ -11,6 +11,7 @@ import {
   RadioGroup,
   Stack,
   Text,
+  Textarea,
   useRadioGroup,
   useToast,
 } from "@chakra-ui/react";
@@ -31,6 +32,7 @@ import { group } from "console";
 const Group: NextPageWithLayout = () => {
   const router = useRouter();
   const [groupName, setGroupName] = useState("");
+  const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [nextTokenId, setNextTokenId] = useState(0);
   const [contractConfig, setContractConfig] = useState();
@@ -85,16 +87,13 @@ const Group: NextPageWithLayout = () => {
 
   const onMint = useCallback(() => {
     setIsLoading(true);
-    // mintNFTを呼び出す
 
     const json = {
       name: groupName,
-      description:
-        "StudySplash🌊📚 is the cutting-edge cohort-based learning platform in the web3 space. Leveraging ERC6551, it records user interactions and course participations on the blockchain, fostering vibrant communication within cohorts and maintaining consistent learning motivation.",
+      description: description,
       image: imageUrl,
     };
     uploadGroupToS3(json);
-    console.log("mintNFT");
     write?.();
   }, [groupName, imageUrl]);
   const { isLoading: isWaitContractLoading, isSuccess: isWaitContractSuccess } =
@@ -139,6 +138,8 @@ const Group: NextPageWithLayout = () => {
 
   const canMint = groupName !== "" && value !== "";
 
+  console.log(description, "description");
+
   return (
     <Registration role={"teacher"}>
       <Divider my={5} borderColor={"brand.teacher"} />
@@ -154,6 +155,11 @@ const Group: NextPageWithLayout = () => {
           size="md"
           onChange={(e) => setGroupName(e.currentTarget.value)}
           value={groupName}
+        />
+        <Textarea
+          mt={5}
+          placeholder="Description"
+          onChange={(e) => setDescription(e.currentTarget.value)}
         />
 
         <FormLabel as="legend" mt={5}>

@@ -110,7 +110,8 @@ const Dashboard: NextPageWithLayout = () => {
 
   useEffect(() => {
     nfts?.forEach((nft: any) => {
-      const isOwner = nft?.owner.addresses.includes(walletAddress);
+      const owner = nft?.owner.addresses[0].toLowerCase();
+      const isOwner = owner.includes(walletAddress.toLowerCase());
 
       if (isOwner) {
         setTokenUri(nft?.tokenNfts.tokenURI);

@@ -4,7 +4,6 @@ import {
   CloseButton,
   Flex,
   Icon,
-  useColorModeValue,
   Drawer,
   DrawerContent,
   useDisclosure,
@@ -43,9 +42,9 @@ interface SidebarProps extends BoxProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: "Dashboard", icon: FiHome, href: "/dashboard" },
-  { name: "Your group", icon: HiUserGroup, href: "/group" },
-  { name: "Profile", icon: BsPersonCircle, href: "/profile" },
-  { name: "Chat", icon: BsFillChatDotsFill, href: "/chat" },
+  { name: "Your group (coming soon)", icon: HiUserGroup, href: "/dashboard" },
+  { name: "Profile (coming soon)", icon: BsPersonCircle, href: "/dashboard" },
+  { name: "Chat (coming soon)", icon: BsFillChatDotsFill, href: "/dashboard" },
 ];
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {

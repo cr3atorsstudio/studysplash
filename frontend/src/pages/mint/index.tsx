@@ -58,6 +58,7 @@ const Mint: NextPageWithLayout = () => {
                 size={"lg"}
                 w={"150px"}
                 color={"white"}
+                isDisabled
               >
                 Student
               </Button>
