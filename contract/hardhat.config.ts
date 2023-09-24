@@ -26,14 +26,47 @@ const config: HardhatUserConfig = {
       url: "https://goerli.base.org",
       accounts: [process.env.PRIVATE_KEY ?? ""],
     },
+    gnosis: {
+      url: "https://rpc.gnosischain.com",
+      accounts: [process.env.PRIVATE_KEY ?? ""],
+    },
+    chiado: {
+      url: "https://rpc.chiadochain.net",
+      gasPrice: 1000000000,
+      accounts: [process.env.PRIVATE_KEY ?? ""],
+    },
   },
   defaultNetwork: "hardhat",
   etherscan: {
     apiKey: {
       scrollSepolia: "abc",
       baseGoerli: `${process.env.ETHERSCAN_API_KEY}`,
+      chiado: `${process.env.GNOSISS_API_KEY}`,
+      gnosis: `${process.env.GNOSISS_API_KEY}`,
     },
     customChains: [
+      {
+        network: "chiado",
+        chainId: 10200,
+        urls: {
+          //Blockscout
+          apiURL: "https://gnosis-chiado.blockscout.com/api",
+          browserURL: "https://blockscout.com/gnosis/chiado",
+        },
+      },
+      {
+        network: "gnosis",
+        chainId: 100,
+        urls: {
+          // 3) Select to what explorer verify the contracts
+          // Gnosisscan
+          apiURL: "https://api.gnosisscan.io/api",
+          browserURL: "https://gnosisscan.io/",
+          // Blockscout
+          //apiURL: "https://blockscout.com/xdai/mainnet/api",
+          //browserURL: "https://blockscout.com/xdai/mainnet",
+        },
+      },
       {
         network: "scrollSepolia",
         chainId: 534351,
