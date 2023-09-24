@@ -104,9 +104,7 @@ const Register: NextPageWithLayout = () => {
     abi: ERC6551_ABI,
     functionName: "createNFT",
     chainId: 137,
-    args: [
-      `https://studysplash.s3.amazonaws.com/metadata/user/${nextTokenId}.json`,
-    ],
+    args: [true],
   });
   const {
     data: writeData,

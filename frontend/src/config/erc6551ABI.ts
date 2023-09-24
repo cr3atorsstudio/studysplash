@@ -80,6 +80,25 @@ export const ERC6551_ABI = [
   {
     anonymous: false,
     inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
       { indexed: true, internalType: "address", name: "from", type: "address" },
       { indexed: true, internalType: "address", name: "to", type: "address" },
       {
@@ -91,6 +110,17 @@ export const ERC6551_ABI = [
     ],
     name: "Transfer",
     type: "event",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    name: "_nftInfos",
+    outputs: [
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
+      { internalType: "address", name: "creator", type: "address" },
+      { internalType: "address", name: "tbaAddress", type: "address" },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [
@@ -110,10 +140,24 @@ export const ERC6551_ABI = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "string", name: "_uri", type: "string" }],
+    inputs: [],
+    name: "chainId",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "bool", name: "isTeacherStatus", type: "bool" }],
     name: "createNFT",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "creatorToTokenId",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -124,11 +168,10 @@ export const ERC6551_ABI = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "_tokenId", type: "uint256" }],
+    inputs: [{ internalType: "address", name: "_creator", type: "address" }],
     name: "getIndividualNFTInfo",
     outputs: [
       { internalType: "uint256", name: "", type: "uint256" },
-      { internalType: "address", name: "", type: "address" },
       { internalType: "address", name: "", type: "address" },
     ],
     stateMutability: "view",
@@ -144,11 +187,25 @@ export const ERC6551_ABI = [
           { internalType: "address", name: "creator", type: "address" },
           { internalType: "address", name: "tbaAddress", type: "address" },
         ],
-        internalType: "struct ERC6551Test.NFTInfo[]",
+        internalType: "struct StudySplashAvatar.NFTInfo[]",
         name: "",
         type: "tuple[]",
       },
     ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "hasMinted",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "implementation",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
     type: "function",
   },
@@ -163,9 +220,23 @@ export const ERC6551_ABI = [
     type: "function",
   },
   {
+    inputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "isTeacher",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "name",
     outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
     type: "function",
   },
@@ -174,6 +245,20 @@ export const ERC6551_ABI = [
     name: "ownerOf",
     outputs: [{ internalType: "address", name: "", type: "address" }],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "registry",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -205,6 +290,29 @@ export const ERC6551_ABI = [
       { internalType: "bool", name: "approved", type: "bool" },
     ],
     name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "_chainId", type: "uint256" }],
+    name: "setChainId",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "_registry", type: "address" }],
+    name: "setRegistryAddress",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "_implementation", type: "address" },
+    ],
+    name: "setimplementationAddress",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -261,6 +369,13 @@ export const ERC6551_ABI = [
       { internalType: "uint256", name: "tokenId", type: "uint256" },
     ],
     name: "transferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
+    name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
