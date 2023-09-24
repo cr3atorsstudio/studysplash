@@ -1,4 +1,4 @@
-export const ERC6551_ABI = [
+export const ERC1155_ABI = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
     anonymous: false,

@@ -25,7 +25,8 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import { ERC6551_ABI } from "@/config/erc1155ABI";
+import { ERC1155_ABI } from "@/config/erc1155ABI";
+import { group } from "console";
 
 const Group: NextPageWithLayout = () => {
   const router = useRouter();
@@ -63,7 +64,7 @@ const Group: NextPageWithLayout = () => {
 
   const { config, error } = usePrepareContractWrite({
     address: "0x8e8233c85ef160859349dd3da61a9f58fa9d07ef",
-    abi: ERC6551_ABI,
+    abi: ERC1155_ABI,
     functionName: "mint",
     chainId: 137,
     args: [address, nextTokenId],
@@ -95,7 +96,7 @@ const Group: NextPageWithLayout = () => {
     uploadGroupToS3(json);
     console.log("mintNFT");
     write?.();
-  }, []);
+  }, [groupName, imageUrl]);
   const { isLoading: isWaitContractLoading, isSuccess: isWaitContractSuccess } =
     useWaitForTransaction({
       hash: writeData?.hash,
