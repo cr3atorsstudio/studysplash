@@ -320,6 +320,7 @@ const Dashboard: NextPageWithLayout = () => {
               </CardBody>
             </Card>
 
+
             <Card rounded={"2xl"} h={"160px"} px={2} w="full">
               <HStack justify={"space-between"}>
                 <CardHeader fontSize={"xl"} fontWeight={500} color={"gray.600"}>
@@ -329,6 +330,7 @@ const Dashboard: NextPageWithLayout = () => {
                   More Details
                 </Text>
               </HStack>
+
 
               <CardBody justifyContent={"center"}>
                 <HStack>
